@@ -1,7 +1,7 @@
-# LogicMixAI
+# thetempMixAi
 
 ## Descrizione
-LogicMixAI è un progetto Python che utilizza modelli generativi AI di Google per analisi e test. Il repository contiene script per l'analisi automatizzata e test dei modelli AI.
+ThetempMixAi è un progetto Python che utilizza modelli generativi AI di Google per analisi e test. Il repository contiene script per l'analisi automatizzata e test dei modelli AI.
 
 ## Struttura del progetto
 - `analize.py`: Script principale per l'analisi tramite modelli generativi AI di Google.
@@ -59,7 +59,7 @@ Questo progetto è distribuito sotto licenza MIT.
 # English Instructions
 
 ## Description
-LogicMixAI is a Python project that uses Google's generative AI models for analysis and testing. The repository contains scripts for automated analysis and model testing.
+ThetempMixAi is a Python project that uses Google's generative AI models for analysis and testing. The repository contains scripts for automated analysis and model testing.
 
 ## Project Structure
 - `analize.py`: Main script for analysis using Google's generative AI models.

@@ -10,9 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 BOUNCE_DIR = os.getenv("BOUNCE_DIR")
-MODEL_TYPE = os.getenv("MIXAI_MODEL", "gemini")  # gemini (default) o ollama
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2")
+MODEL_TYPE = os.getenv("MIXAI_MODEL", "gemini")  # gemini (default), ollama, openai, huggingface
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+HUGGINGFACE_API_URL = os.getenv("HUGGINGFACE_API_URL")
+HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "facebook/musicgen-small")
 
 if not API_KEY:
     print("❌ ERRORE: Manca la API KEY nel file .env")
@@ -66,6 +68,26 @@ def analyze_with_ollama(audio_path, screenshot_path):
     response = requests.post(f"{OLLAMA_URL}/api/generate", data=data, files=files)
     return response.text if response.ok else f"Errore Ollama: {response.text}"
 
+def analyze_with_openai(audio_path, screenshot_path):
+    import openai
+    openai.api_key = OPENAI_API_KEY
+    # Qui puoi personalizzare la chiamata a OpenAI (es. invio prompt, file, ecc.)
+    # Esempio base:
+    response = openai.ChatCompletion.create(
+        model=OPENAI_MODEL,
+        messages=[{"role": "system", "content": PROMPT}],
+    )
+    return response.choices[0].message['content']
+
+def analyze_with_huggingface(audio_path, screenshot_path):
+    import requests
+    files = {'audio': open(audio_path, 'rb')}
+    if screenshot_path and os.path.exists(screenshot_path):
+        files['image'] = open(screenshot_path, 'rb')
+    data = {'inputs': PROMPT, 'model': HUGGINGFACE_MODEL}
+    response = requests.post(HUGGINGFACE_API_URL, data=data, files=files)
+    return response.text if response.ok else f"Errore HuggingFace: {response.text}"
+
 def main():
     # 1. Trova il file audio (Manuale o Automatico)
     take_screenshot = True
@@ -112,6 +134,10 @@ def main():
         result_text = analyze_with_gemini(audio_file, image_file)
     elif MODEL_TYPE == "ollama":
         result_text = analyze_with_ollama(audio_path, screenshot_path if take_screenshot else None)
+    elif MODEL_TYPE == "openai":
+        result_text = analyze_with_openai(audio_path, screenshot_path if take_screenshot else None)
+    elif MODEL_TYPE == "huggingface":
+        result_text = analyze_with_huggingface(audio_path, screenshot_path if take_screenshot else None)
     else:
         print(f"❌ Modello non supportato: {MODEL_TYPE}")
         return

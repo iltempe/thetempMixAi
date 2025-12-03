@@ -39,6 +39,22 @@ OLLAMA_MODEL=nome_modello_locale
 BOUNCE_DIR=/percorso/alla/cartella/bounce
 ```
 
+### Esempio per OpenAI
+```
+MIXAI_MODEL=openai
+OPENAI_API_KEY=la_tua_chiave_openai
+OPENAI_MODEL=gpt-3.5-turbo
+BOUNCE_DIR=/percorso/alla/cartella/bounce
+```
+
+### Esempio per HuggingFace
+```
+MIXAI_MODEL=huggingface
+HUGGINGFACE_API_URL=https://api-inference.huggingface.co/models/facebook/musicgen-small
+HUGGINGFACE_MODEL=facebook/musicgen-small
+BOUNCE_DIR=/percorso/alla/cartella/bounce
+```
+
 Assicurati che il server Ollama sia avviato in locale e che il modello sia disponibile. Puoi avviare Ollama con:
 ```bash
 ollama serve
@@ -122,6 +138,22 @@ BOUNCE_DIR=/path/to/bounce/folder
 MIXAI_MODEL=ollama
 OLLAMA_URL=http://localhost:11434
 OLLAMA_MODEL=your_local_model_name
+BOUNCE_DIR=/path/to/bounce/folder
+```
+
+### Example for OpenAI
+```
+MIXAI_MODEL=openai
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-3.5-turbo
+BOUNCE_DIR=/path/to/bounce/folder
+```
+
+### Example for HuggingFace
+```
+MIXAI_MODEL=huggingface
+HUGGINGFACE_API_URL=https://api-inference.huggingface.co/models/facebook/musicgen-small
+HUGGINGFACE_MODEL=facebook/musicgen-small
 BOUNCE_DIR=/path/to/bounce/folder
 ```
 

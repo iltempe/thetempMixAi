@@ -89,6 +89,14 @@ Esegui i test:
 python test_models.py
 ```
 
+## Gestione delle chiavi API
+Per motivi di sicurezza, la tua chiave Gemini (e altre chiavi sensibili) non deve mai essere committata su GitHub.
+
+- In locale, usa il file `.env` con le tue chiavi reali (questo file è ignorato da Git).
+- In remoto o su GitHub, usa solo `config.env` con chiavi di esempio/fake.
+
+Lo script carica automaticamente `.env` in locale e `config.env` in remoto, così la tua chiave resta privata.
+
 ## Dipendenze principali
 - `google-generativeai`: SDK per l'accesso ai modelli AI di Google
 
@@ -190,6 +198,14 @@ Run the tests:
 ```bash
 python test_models.py
 ```
+
+## API keys management
+For security reasons, your Gemini key (and other sensitive keys) should never be committed to GitHub.
+
+- Locally, use the `.env` file with your real keys (this file is ignored by Git).
+- Remotely or on GitHub, use only `config.env` with example/fake keys.
+
+The script automatically loads `.env` locally and `config.env` remotely, so your key stays private.
 
 ## Main dependencies
 - `google-generativeai`: SDK to access Google's AI models

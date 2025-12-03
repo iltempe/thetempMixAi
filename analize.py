@@ -5,12 +5,18 @@ import glob
 import subprocess
 import google.generativeai as genai
 from dotenv import load_dotenv
+import socket
 
 # --- CONFIGURAZIONE ---
-load_dotenv()
+if socket.gethostname() == "MacBook-Pro-di-Matteo-2":
+    load_dotenv(".env")
+else:
+    load_dotenv("config.env")
 API_KEY = os.getenv("GEMINI_API_KEY")
 BOUNCE_DIR = os.getenv("BOUNCE_DIR")
 MODEL_TYPE = os.getenv("MIXAI_MODEL", "gemini")  # gemini (default), ollama, openai, huggingface
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 HUGGINGFACE_API_URL = os.getenv("HUGGINGFACE_API_URL")

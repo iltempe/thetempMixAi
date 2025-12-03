@@ -89,13 +89,20 @@ Esegui i test:
 python test_models.py
 ```
 
-## Gestione delle chiavi API
-Per motivi di sicurezza, la tua chiave Gemini (e altre chiavi sensibili) non deve mai essere committata su GitHub.
+## Configurazione ambiente
 
-- In locale, usa il file `.env` con le tue chiavi reali (questo file è ignorato da Git).
-- In remoto o su GitHub, usa solo `config.env` con chiavi di esempio/fake.
+Per motivi di sicurezza, usa **solo il file `.env` locale** per le tue chiavi reali. Non committare mai `.env` su GitHub!
 
-Lo script carica automaticamente `.env` in locale e `config.env` in remoto, così la tua chiave resta privata.
+- Copia il file `.env.example` in `.env` e inserisci le tue chiavi e percorsi reali.
+- `.env.example` contiene solo valori di esempio/fake.
+- Il file `.env` è già ignorato dal `.gitignore`.
+
+Esempio:
+```
+GEMINI_API_KEY=la_tua_chiave_api
+BOUNCE_DIR=/Users/iltempe/Music/Logic/Bounces
+MIXAI_MODEL=gemini
+```
 
 ## Dipendenze principali
 - `google-generativeai`: SDK per l'accesso ai modelli AI di Google
@@ -206,6 +213,21 @@ For security reasons, your Gemini key (and other sensitive keys) should never be
 - Remotely or on GitHub, use only `config.env` with example/fake keys.
 
 The script automatically loads `.env` locally and `config.env` remotely, so your key stays private.
+
+## Environment configuration
+
+For security reasons, use **only the local `.env` file** for your real keys. Never commit `.env` to GitHub!
+
+- Copy the `.env.example` file to `.env` and enter your real keys and paths.
+- `.env.example` contains only example/fake values.
+- The `.env` file is already ignored by `.gitignore`.
+
+Example:
+```
+GEMINI_API_KEY=your_api_key
+BOUNCE_DIR=/Users/iltempe/Music/Logic/Bounces
+MIXAI_MODEL=gemini
+```
 
 ## Main dependencies
 - `google-generativeai`: SDK to access Google's AI models

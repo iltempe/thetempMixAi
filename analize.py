@@ -8,10 +8,7 @@ from dotenv import load_dotenv
 import socket
 
 # --- CONFIGURAZIONE ---
-if socket.gethostname() == "MacBook-Pro-di-Matteo-2":
-    load_dotenv(".env")
-else:
-    load_dotenv("config.env")
+load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 BOUNCE_DIR = os.getenv("BOUNCE_DIR")
 MODEL_TYPE = os.getenv("MIXAI_MODEL", "gemini")  # gemini (default), ollama, openai, huggingface
@@ -44,6 +41,7 @@ OUTPUT RICHIESTO:
 
 def get_latest_bounce():
     """Trova l'ultimo file MP3 o WAV creato nella cartella dei bounce."""
+    print(f"DEBUG BOUNCE_DIR: {BOUNCE_DIR}")
     if not BOUNCE_DIR or not os.path.exists(BOUNCE_DIR):
         print(f"❌ Errore percorso: {BOUNCE_DIR} non esiste o non è configurato.")
         return None

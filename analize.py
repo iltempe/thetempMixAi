@@ -10,6 +10,9 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 BOUNCE_DIR = os.getenv("BOUNCE_DIR")
+MODEL_TYPE = os.getenv("MIXAI_MODEL", "gemini")  # gemini (default) o ollama
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2")
 
 if not API_KEY:
     print("❌ ERRORE: Manca la API KEY nel file .env")
@@ -47,11 +50,33 @@ def get_latest_bounce():
     # Restituisce il file con data di creazione più recente
     return max(list_of_files, key=os.path.getctime)
 
+def analyze_with_gemini(audio_file, image_file):
+    prompt_inputs = [PROMPT, audio_file]
+    if image_file:
+        prompt_inputs.append(image_file)
+    response = model.generate_content(prompt_inputs)
+    return response.text
+
+def analyze_with_ollama(audio_path, screenshot_path):
+    import requests
+    files = {'audio': open(audio_path, 'rb')}
+    if screenshot_path and os.path.exists(screenshot_path):
+        files['image'] = open(screenshot_path, 'rb')
+    data = {'prompt': PROMPT, 'model': OLLAMA_MODEL}
+    response = requests.post(f"{OLLAMA_URL}/api/generate", data=data, files=files)
+    return response.text if response.ok else f"Errore Ollama: {response.text}"
+
 def main():
     # 1. Trova il file audio (Manuale o Automatico)
-    if len(sys.argv) > 1:
-        audio_path = sys.argv[1].strip().replace('"', '').replace("'", "")
-    else:
+    take_screenshot = True
+    audio_path = None
+    # Controllo parametri
+    for arg in sys.argv[1:]:
+        if arg.lower() in ["--no-screenshot", "-ns"]:
+            take_screenshot = False
+        elif not audio_path:
+            audio_path = arg.strip().replace('"', '').replace("'", "")
+    if not audio_path:
         print("🔎 Cerco l'ultimo bounce fatto...")
         audio_path = get_latest_bounce()
     
@@ -61,51 +86,54 @@ def main():
 
     print(f"🎧 Analizzo: {os.path.basename(audio_path)}")
     
-    # 2. Screenshot "Brute Force" (Tutto lo schermo)
-    # Non serve countdown perché useremo la scorciatoia da tastiera mentre Logic è aperto
+    # 2. Screenshot opzionale tramite parametro
     screenshot_path = os.path.join(os.path.dirname(audio_path), "temp_screen.png")
-    
-    try:
-        # Scatta subito (presuppone che Logic sia visibile)
-        # -x (muto), -m (main monitor), -t png
-        subprocess.run(["screencapture", "-x", "-m", "-t", "png", screenshot_path], check=True)
-        print("📸 Screenshot preso.")
+    image_file = None
+    if take_screenshot:
+        try:
+            subprocess.run(["screencapture", "-x", "-m", "-t", "png", screenshot_path], check=True)
+            print("📸 Screenshot preso.")
+            image_file = genai.upload_file(path=screenshot_path)
+        except Exception as e:
+            print(f"❌ Errore screenshot: {e}")
+            screenshot_path = None
+    else:
+        print("⏭️ Screenshot saltato.")
 
-        # 3. Analisi AI
-        print("🚀 Invio a Gemini...")
+    # 3. Analisi AI
+    print(f"🚀 Invio a {MODEL_TYPE.capitalize()}...")
+    if MODEL_TYPE == "gemini":
         audio_file = genai.upload_file(path=audio_path)
-        image_file = genai.upload_file(path=screenshot_path)
-
         while audio_file.state.name == "PROCESSING":
             time.sleep(1)
             audio_file = genai.get_file(audio_file.name)
-            
         if audio_file.state.name == "FAILED":
             raise ValueError("Errore Google Audio.")
+        result_text = analyze_with_gemini(audio_file, image_file)
+    elif MODEL_TYPE == "ollama":
+        result_text = analyze_with_ollama(audio_path, screenshot_path if take_screenshot else None)
+    else:
+        print(f"❌ Modello non supportato: {MODEL_TYPE}")
+        return
 
-        response = model.generate_content([PROMPT, audio_file, image_file])
-
-        # 4. Salvataggio
-        report_path = audio_path + "_ANALISI.txt"
-        with open(report_path, "w", encoding="utf-8") as f:
-            f.write(response.text)
-        
-        # 5. AUTO-APERTURA REPORT (La magia)
-        print("✅ Fatto! Apro il report...")
-        subprocess.run(["open", report_path])
-
-        # Voce (Mac OS default voice)
-        # Se hai voci italiane installate userà quelle, altrimenti una generica
-        subprocess.run(["say", "Analisi del mix pronta"])
-        
-        # Pulizia
-        if os.path.exists(screenshot_path):
-            os.remove(screenshot_path)
+    # 4. Salvataggio
+    report_path = audio_path + "_ANALISI.txt"
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write(result_text)
+    
+    # 5. AUTO-APERTURA REPORT (La magia)
+    print("✅ Fatto! Apro il report...")
+    subprocess.run(["open", report_path])
+    
+    subprocess.run(["say", "Analisi del mix pronta"])
+    
+    # Pulizia
+    if screenshot_path and os.path.exists(screenshot_path):
+        os.remove(screenshot_path)
+    if audio_file:
         audio_file.delete()
+    if image_file:
         image_file.delete()
-
-    except Exception as e:
-        print(f"❌ Errore: {e}")
 
 if __name__ == "__main__":
     main()

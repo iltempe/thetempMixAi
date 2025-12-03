@@ -14,10 +14,21 @@ ThetempMixAi è un progetto Python che utilizza modelli generativi AI di Google 
 - File `.env` locale con le chiavi API necessarie
 
 ## Come creare il file .env
-Crea un file chiamato `.env` nella root del progetto e aggiungi le tue chiavi API Google:
+Crea un file chiamato `.env` nella root del progetto e aggiungi le variabili necessarie:
+
+### Esempio per Gemini (default)
 ```
-GOOGLE_API_KEY=la_tua_chiave_api
-ALTRE_VARIABILI=valore
+GEMINI_API_KEY=la_tua_chiave_api
+BOUNCE_DIR=/percorso/alla/cartella/bounce
+MIXAI_MODEL=gemini
+```
+
+### Esempio per Ollama
+```
+MIXAI_MODEL=ollama
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama2
+BOUNCE_DIR=/percorso/alla/cartella/bounce
 ```
 Assicurati di non committare il file `.env` su GitHub.
 
@@ -72,10 +83,21 @@ ThetempMixAi is a Python project that uses Google's generative AI models for ana
 - Local `.env` file with required API keys
 
 ## How to create the .env file
-Create a file named `.env` in the project root and add your Google API keys:
+Create a file named `.env` in the project root and add the required variables:
+
+### Example for Gemini (default)
 ```
-GOOGLE_API_KEY=your_api_key
-OTHER_VARIABLES=value
+GEMINI_API_KEY=your_api_key
+BOUNCE_DIR=/path/to/bounce/folder
+MIXAI_MODEL=gemini
+```
+
+### Example for Ollama
+```
+MIXAI_MODEL=ollama
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama2
+BOUNCE_DIR=/path/to/bounce/folder
 ```
 Make sure not to commit the `.env` file to GitHub.
 

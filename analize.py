@@ -6,18 +6,22 @@ import subprocess
 import google.generativeai as genai
 from dotenv import load_dotenv
 import socket
+from datetime import datetime
 
 # --- CONFIGURAZIONE ---
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 BOUNCE_DIR = os.getenv("BOUNCE_DIR")
-MODEL_TYPE = os.getenv("MIXAI_MODEL", "gemini")  # gemini (default), ollama, openai, huggingface
+MODEL_TYPE = os.getenv("MIXAI_MODEL", "gemini")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 HUGGINGFACE_API_URL = os.getenv("HUGGINGFACE_API_URL")
 HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "facebook/musicgen-small")
+TAKE_SCREENSHOT = os.getenv("TAKE_SCREENSHOT", "true").lower() == "true"
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 if not API_KEY:
     print("❌ ERRORE: Manca la API KEY nel file .env")
@@ -94,7 +98,7 @@ def analyze_with_huggingface(audio_path, screenshot_path):
 
 def main():
     # 1. Trova il file audio (Manuale o Automatico)
-    take_screenshot = True
+    take_screenshot = TAKE_SCREENSHOT
     audio_path = None
     # Controllo parametri
     for arg in sys.argv[1:]:
@@ -112,8 +116,8 @@ def main():
 
     print(f"🎧 Analizzo: {os.path.basename(audio_path)}")
     
-    # 2. Screenshot opzionale tramite parametro
-    screenshot_path = os.path.join(os.path.dirname(audio_path), "temp_screen.png")
+    # 2. Screenshot opzionale tramite variabile ambiente
+    screenshot_path = os.path.join(OUTPUT_DIR, f"{os.path.splitext(os.path.basename(audio_path))[0]}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_screen.png")
     image_file = None
     if take_screenshot:
         try:
@@ -146,15 +150,38 @@ def main():
         print(f"❌ Modello non supportato: {MODEL_TYPE}")
         return
 
-    # 4. Salvataggio
-    report_path = audio_path + "_ANALISI.txt"
+    # 4. Salvataggio HTML in output
+    base_name = os.path.splitext(os.path.basename(audio_path))[0]
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    report_path = os.path.join(OUTPUT_DIR, f"{base_name}_{timestamp}_ANALISI.html")
+    screenshot_html = f"<img src='{os.path.basename(screenshot_path)}' alt='Screenshot' style='max-width:600px;border-radius:8px;margin:20px 0;'>" if take_screenshot and screenshot_path and os.path.exists(screenshot_path) else ""
+    style = """
+    <style>
+      body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f7fa; color: #222; margin: 0; padding: 0; }
+      .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #0001; padding: 32px; }
+      h1 { color: #3a6ea5; margin-bottom: 0; }
+      .meta { font-size: 1rem; color: #666; margin-bottom: 24px; }
+      .section { margin-bottom: 32px; }
+      .section-title { font-size: 1.2rem; color: #3a6ea5; margin-bottom: 8px; }
+      pre { background: #f0f4fa; border-radius: 8px; padding: 16px; font-size: 1rem; overflow-x: auto; }
+      img { box-shadow: 0 2px 8px #0002; }
+    </style>
+    """
+    html = f"""
+    <html><head><meta charset='utf-8'><title>Report {base_name}</title>{style}</head><body><div class='container'>
+      <h1>Analisi Mix: {base_name}</h1>
+      <div class='meta'>Data: {timestamp[:8]} Ora: {timestamp[9:]}<br>File analizzato: {audio_path}</div>
+      {screenshot_html}
+      <div class='section'>
+        <div class='section-title'>Risultato AI</div>
+        <pre>{result_text}</pre>
+      </div>
+    </div></body></html>
+    """
     with open(report_path, "w", encoding="utf-8") as f:
-        f.write(result_text)
-    
-    # 5. AUTO-APERTURA REPORT (La magia)
-    print("✅ Fatto! Apro il report...")
+        f.write(html)
+    print(f"✅ Fatto! Report HTML salvato in {report_path}")
     subprocess.run(["open", report_path])
-    
     subprocess.run(["say", "Analisi del mix pronta"])
     
     # Pulizia

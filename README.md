@@ -89,6 +89,15 @@ Esegui i test:
 python test_models.py
 ```
 
+## Output
+
+I report vengono generati in formato HTML nella cartella `output/` con nome basato sul file analizzato, data e ora. Anche gli screenshot (se abilitati) vengono salvati lì.
+
+Per abilitare/disabilitare la cattura screenshot, imposta la variabile `TAKE_SCREENSHOT` nel file `.env`:
+```
+TAKE_SCREENSHOT=true  # oppure false
+```
+
 ## Configurazione ambiente
 
 Per motivi di sicurezza, usa **solo il file `.env` locale** per le tue chiavi reali. Non committare mai `.env` su GitHub!
@@ -213,6 +222,15 @@ For security reasons, your Gemini key (and other sensitive keys) should never be
 - Remotely or on GitHub, use only `config.env` with example/fake keys.
 
 The script automatically loads `.env` locally and `config.env` remotely, so your key stays private.
+
+## Output
+
+Reports are generated in HTML format in the `output/` folder, named after the analyzed file, date and time. Screenshots (if enabled) are also saved there.
+
+To enable/disable screenshot capture, set the `TAKE_SCREENSHOT` variable in the `.env` file:
+```
+TAKE_SCREENSHOT=true  # or false
+```
 
 ## Environment configuration
 

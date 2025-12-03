@@ -25,6 +25,7 @@ Analizza questo mix basandoti su:
 2. VISUAL (Screenshot): Guarda il mixer/arrangiamento per trovare conferme visive (es. fader, EQ).
 
 OUTPUT RICHIESTO:
+- Sezione iniziale: indica KEY (tonalità), BPM e GENERE musicale del brano in modo sintetico.
 - Analisi Critica (Cosa senti vs Cosa vedi). Focus sul mixing della voce
 - Azioni correttive immediate e numerate.
 - Tono: Professionale, sintetico, italiano. Niente preamboli.

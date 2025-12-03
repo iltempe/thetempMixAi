@@ -30,6 +30,23 @@ OLLAMA_URL=http://localhost:11434
 OLLAMA_MODEL=llama2
 BOUNCE_DIR=/percorso/alla/cartella/bounce
 ```
+
+### Esempio per modello locale con Ollama
+```
+MIXAI_MODEL=ollama
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=nome_modello_locale
+BOUNCE_DIR=/percorso/alla/cartella/bounce
+```
+
+Assicurati che il server Ollama sia avviato in locale e che il modello sia disponibile. Puoi avviare Ollama con:
+```bash
+ollama serve
+```
+E caricare un modello locale con:
+```bash
+ollama pull nome_modello_locale
+```
 Assicurati di non committare il file `.env` su GitHub.
 
 ## Installazione
@@ -98,6 +115,23 @@ MIXAI_MODEL=ollama
 OLLAMA_URL=http://localhost:11434
 OLLAMA_MODEL=llama2
 BOUNCE_DIR=/path/to/bounce/folder
+```
+
+### Example for local model with Ollama
+```
+MIXAI_MODEL=ollama
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=your_local_model_name
+BOUNCE_DIR=/path/to/bounce/folder
+```
+
+Make sure the Ollama server is running locally and the model is available. You can start Ollama with:
+```bash
+ollama serve
+```
+And load a local model with:
+```bash
+ollama pull your_local_model_name
 ```
 Make sure not to commit the `.env` file to GitHub.
 
